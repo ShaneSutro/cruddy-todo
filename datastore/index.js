@@ -9,7 +9,7 @@ var items = {};
 
 exports.create = (text, callback) => {
   counter.getNextUniqueId((err, id) => {
-    fs.writeFile(path.join(__dirname, 'data/' + id), text, (err) => {
+    fs.writeFile(exports.dataDir + '/' + id + '.txt', text, (err) => {
       if (err) {
         throw 'error saving TODO';
       } else {
@@ -20,10 +20,14 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      throw 'error reading data directory';
+    } else {
+      var data = files.map(file => ({id: file.slice(0, 5), text: file.slice(0, 5)}));
+      callback(null, data);
+    }
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
