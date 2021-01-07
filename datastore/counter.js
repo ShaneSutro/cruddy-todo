@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
+const Promise = require('bluebird');
+const readFileAsync = Promise.promisify(fs.readFile);
+const writeFileAsync = Promise.promisify(fs.writeFile);
 
 var counter = 0;
 
@@ -15,50 +18,35 @@ const zeroPaddedNumber = (num) => {
   return sprintf('%05d', num);
 };
 
-const readCounter = (callback) => {
-  fs.readFile(exports.counterFile, (err, fileData) => {
-    if (err) {
-      callback(null, 0);
-    } else {
-      callback(null, Number(fileData));
-    }
+const readCounter = () => {
+  return new Promise((resolve, reject) => {
+    readFileAsync(exports.counterFile)
+      .then(fileData => resolve(Number(fileData)))
+      .catch(err => resolve(0));
   });
 };
 
-const writeCounter = (count, callback) => {
-  var counterString = zeroPaddedNumber(count);
-  fs.writeFile(exports.counterFile, counterString, (err) => {
-    if (err) {
-      throw ('error writing counter');
-    } else {
-      callback(null, counterString);
-    }
+const writeCounter = (count) => {
+  return new Promise ((resolve, reject) => {
+    var counterString = zeroPaddedNumber(count);
+    writeFileAsync(exports.counterFile, counterString)
+      .then(() => resolve(counterString))
+      .catch(err => {
+        reject('error writing counter');
+      });
   });
 };
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = (cb) => {
-  // create a callback - set counter equal to number from file
-  // call read counter with the callback
-  // call write counter with new counter number
-  var callback = function(err, data) {
-    if (err) {
-      throw ('error reading file');
-    } else {
-      counter = data + 1;
-      writeCounter(counter, function(err, data) {
-        if (err) {
-          throw ('error writing counter');
-        } else {
-          var id = zeroPaddedNumber(counter);
-          cb && cb(null, id);
-        }
-      });
-    }
-  };
-
-  readCounter(callback);
+exports.getNextUniqueId = () => {
+  return new Promise((resolve, reject) => {
+    readCounter()
+      .then(count => zeroPaddedNumber(count + 1))
+      .then(incrementedID => writeCounter(incrementedID))
+      .then(id => resolve(id))
+      .catch(err => reject(err));
+  });
 };
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////

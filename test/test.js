@@ -26,12 +26,17 @@ describe('getNextUniqueId', () => {
   beforeEach(initializeTestCounter);
   beforeEach(cleanTestDatastore);
 
-  it('should use error first callback pattern', (done) => {
-    counter.getNextUniqueId((err, id) => {
-      expect(err).to.be.null;
-      expect(id).to.exist;
-      done();
-    });
+  it('should use promises', (done) => {
+    counter.getNextUniqueId()
+      .then(id => {
+        expect(id).to.exist;
+      })
+      .catch(err => {
+        expect(err).to.be.null;
+      })
+      .finally(() => {
+        done();
+      });
   });
 
   it('should give an id as a zero padded string', (done) => {

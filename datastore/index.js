@@ -5,21 +5,20 @@ const counter = require('./counter');
 const Promise = require('bluebird');
 
 const readFileAsync = Promise.promisify(fs.readFile);
+const writeFileAsync = Promise.promisify(fs.writeFile);
 
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  counter.getNextUniqueId((err, id) => {
-    fs.writeFile(exports.dataDir + '/' + id + '.txt', text, (err) => {
-      if (err) {
-        throw 'error saving TODO';
-      } else {
-        callback(null, { id, text });
-      }
-    });
-  });
+  counter.getNextUniqueId()
+    .then(newID => {
+      writeFileAsync(exports.dataDir + '/' + id + '.txt', text);
+      return newID;
+    })
+    .then((id) => callback( { id, text }))
+    .catch(err => console.log(err));
 };
 
 exports.readAll = (callback) => {
