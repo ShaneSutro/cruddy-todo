@@ -40,28 +40,45 @@ describe('getNextUniqueId', () => {
   });
 
   it('should give an id as a zero padded string', (done) => {
-    counter.getNextUniqueId((err, id) => {
-      expect(id).to.be.a.string;
-      expect(id).to.match(/^0/);
-      done();
-    });
+    counter.getNextUniqueId()
+      .then(id => {
+        expect(id).to.exist;
+        expect(id).to.be.a.string;
+        expect(id).to.match(/^0/);
+      })
+      .catch(err => {
+        expect(err).to.be.null;
+      })
+      .finally(() => {
+        done();
+      });
   });
 
   it('should give the next id based on the count in the file', (done) => {
     fs.writeFileSync(counter.counterFile, '00025');
-    counter.getNextUniqueId((err, id) => {
-      expect(id).to.equal('00026');
-      done();
-    });
+    counter.getNextUniqueId()
+      .then(id => {
+        expect(id).to.exist;
+        expect(id).to.be.a.string;
+        expect(id).to.match(/^0/);
+        expect(id).to.equal('00026');
+      })
+      .catch(err => {
+        expect(err).to.be.null;
+      })
+      .finally(() => {
+        done();
+      });
   });
 
   it('should update the counter file with the next value', (done) => {
     fs.writeFileSync(counter.counterFile, '00371');
-    counter.getNextUniqueId((err, id) => {
-      const counterFileContents = fs.readFileSync(counter.counterFile).toString();
-      expect(counterFileContents).to.equal('00372');
-      done();
-    });
+    counter.getNextUniqueId()
+      .then(id => {
+        const counterFileContents = fs.readFileSync(counter.counterFile).toString();
+        expect(counterFileContents).to.equal('00372');
+        done();
+      });
   });
 
 });
@@ -95,7 +112,8 @@ describe('todos', () => {
     it('should only save todo text contents in file', (done) => {
       const todoText = 'walk the dog';
       todos.create(todoText, (err, todo) => {
-        const todoFileContents = fs.readFileSync(path.join(todos.dataDir, `${todo.id}.txt`)).toString();
+        var file = path.join(todos.dataDir, `${todo.id}.txt`);
+        const todoFileContents = fs.readFileSync(file).toString();
         expect(todoFileContents).to.equal(todoText);
         done();
       });

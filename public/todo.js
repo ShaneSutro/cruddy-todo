@@ -47,6 +47,15 @@ window.Todo = {
     });
   },
 
+  swap: function(id1, id2, callback) {
+    return $.ajax({
+      url: `${this.url}/swap/${id1}/${id2}`,
+      type: 'PUT',
+      dataType: 'json',
+      success: callback
+    });
+  },
+
   // Delete (cruD) -- member
   delete: function(id, callback) {
     return $.ajax({

@@ -7,6 +7,8 @@ $(() => {
       <span><%=text%></span>
       <button data-action="edit">edit</button>
       <button data-action="done">&#x2714;</button>
+      <button data-action="up">&#9650;</button>
+      <button data-action="down">&#9660;</button>
     </li>
   `);
 
@@ -44,14 +46,31 @@ $(() => {
 
   $('#todos').delegate('button', 'click', (event) => {
     var id = $(event.target.parentNode).data('id');
-    if ($(event.target).data('action') === 'edit') {
+    var action = $(event.target).data('action');
+    if (action === 'edit') {
       Todo.readOne(id, (todo) => {
         var updatedText = prompt('Change to?', todo.text);
         if (updatedText !== null && updatedText !== todo.text) {
           Todo.update(id, updatedText, changeTodo.bind(null, id));
         }
       });
-    } else {
+    } else if (action === 'up') {
+      var prevSiblingID = $(event.target.parentNode).prev().data('id');
+      if (prevSiblingID) {
+        Todo.swap(id, prevSiblingID, () => {
+          changeTodo(id, $(`li[data-id=${prevSiblingID}] span`).text());
+          changeTodo(prevSiblingID, $(`li[data-id=${id}] span`).text());
+        });
+      }
+    } else if (action === 'down') {
+      var nextSiblingID = $(event.target.parentNode).next().data('id');
+      if (nextSiblingID) {
+        Todo.swap(id, nextSiblingID, () => {
+          changeTodo(id, $(`li[data-id=${nextSiblingID}] span`).text());
+          changeTodo(nextSiblingID, $(`li[data-id=${id}] span`).text());
+        });
+      }
+    } else if (action === 'done') {
       Todo.delete(id, removeTodo.bind(null, id));
     }
   });
