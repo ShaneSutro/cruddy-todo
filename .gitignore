@@ -38,3 +38,5 @@ node_modules
 .floobit
 .floo
 .flooignore
+
+public/compiled/

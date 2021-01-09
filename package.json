@@ -13,19 +13,25 @@
     "start": "nodemon ./server.js",
     "clean": "rm -rf datastore/data/* datastore/counter.txt",
     "lint": "eslint ./",
-    "test": "mocha test"
+    "test": "mocha test",
+    "react": "babel src/ --out-dir public/compiled --presets=react --source-maps inline --watch & live-server"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "morgan": "^1.9.0",
+    "react": "^17.0.1",
     "sprintf-js": "^1.1.1",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
     "chai": "^4.1.2",
     "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor",
-    "mocha": "^5.2.0"
+    "live-server": "^1.2.1",
+    "mocha": "^5.2.0",
+    "webpack": "^5.12.2"
   }
 }

@@ -61,6 +61,24 @@ exports.update = (id, text, callback) => {
     });
 };
 
+exports.swap = (id1, id2, callback) => {
+  var text1;
+  var text2;
+  readFileAsync(exports.dataDir + `/${id1}.txt`, 'utf8')
+    .then(data1 => (text1 = data1))
+    .then(() => {
+      return readFileAsync(exports.dataDir + `/${id2}.txt`, 'utf8');
+    })
+    .then(data2 => (text2 = data2))
+    .then(() => {
+      var promises = [writeFileAsync(exports.dataDir + `/${id1}.txt`, text2),
+        writeFileAsync(exports.dataDir + `/${id2}.txt`, text1)];
+      return Promise.all(promises);
+    })
+    .then(() => callback(null, [{ id: id1, text: text2 }, { id: id2, text: text1 }]))
+    .catch((err) => callback(err, null));
+};
+
 exports.delete = (id, callback) => {
   unlinkAsync(exports.dataDir + `/${id}.txt`)
     .then(() => callback())

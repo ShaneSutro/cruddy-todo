@@ -15,7 +15,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, './public')));
-
+//app.use(express.static(path.join(__dirname, './compiled')));
 // RESTful Routes for CRUD operations //////////////////////////////////////////
 
 // Create (Crud) -- collection route
@@ -56,6 +56,16 @@ app.put('/todo/:id', (req, res) => {
   Todo.update(req.params.id, req.body.todoText, (err, todo) => {
     if (todo) {
       res.status(200).json(todo);
+    } else {
+      res.sendStatus(404);
+    }
+  });
+});
+
+app.put('/todo/swap/:id1/:id2', (req, res) => {
+  Todo.swap(req.params.id1, req.params.id2, (err, todos) => {
+    if (todos) {
+      res.status(200).json(todos);
     } else {
       res.sendStatus(404);
     }

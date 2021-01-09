@@ -56,18 +56,22 @@ $(() => {
       });
     } else if (action === 'up') {
       var prevSiblingID = $(event.target.parentNode).prev().data('id');
+      var id = $(event.target.parentNode).data('id');
       if (prevSiblingID) {
         Todo.swap(id, prevSiblingID, () => {
-          changeTodo(id, $(`li[data-id=${prevSiblingID}] span`).text());
-          changeTodo(prevSiblingID, $(`li[data-id=${id}] span`).text());
+          var temp = $(`li[data-id=${id}] span`).text();
+          changeTodo(id, { id: id, text: $(`li[data-id=${prevSiblingID}] span`).text() });
+          changeTodo(prevSiblingID, { id: prevSiblingID, text: temp });
         });
       }
     } else if (action === 'down') {
       var nextSiblingID = $(event.target.parentNode).next().data('id');
+      var id = $(event.target.parentNode).data('id');
       if (nextSiblingID) {
         Todo.swap(id, nextSiblingID, () => {
-          changeTodo(id, $(`li[data-id=${nextSiblingID}] span`).text());
-          changeTodo(nextSiblingID, $(`li[data-id=${id}] span`).text());
+          var temp = $(`li[data-id=${id}] span`).text();
+          changeTodo(id, { id: id, text: $(`li[data-id=${nextSiblingID}] span`).text() });
+          changeTodo(nextSiblingID, { id: nextSiblingID, text: temp });
         });
       }
     } else if (action === 'done') {
@@ -78,6 +82,6 @@ $(() => {
   // Initialization //////////////////////////////////////////////////////////////
 
   console.log('CRUDdy Todo client is running the browser');
-  Todo.readAll(addAllTodos);
+  //Todo.readAll(addAllTodos);
 
 });
